@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main page of Hospital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        if (!localStorage.getItem('token')) {
+            window.location = '../src/login.html';
+        } else {
+            new Hospital().checkUser()
+        }
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        customIndigo: '#4f46e5',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* styles for select-option of department and specs */
+        ul[role="listbox"] {
+            max-height: 10rem;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        ul[role="listbox"]::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ul[role="listbox"]::-webkit-scrollbar-thumb {
+            background-color: #cbd5e0;
+            border-radius: 4px;
+        }
+
+        /* To hide scrollbar but keep scrolling (optional) */
+        ul[role="listbox"] {
+            scrollbar-width: none;
+        }
+
+        ul[role="listbox"]::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* styles for adding photo button */
+         /* From Uiverse.io by SpatexDEV */ */
+        
+    </style>
+</head>
+<body>
+    <style>
+         .inputImgBtn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+            width: 40%;
+            background-color: #4f86f7; /* Blue background */
+            color: rgb(255, 255, 255);
+            padding: 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            background-color: #488aec;
+            font-size: 0.55rem;
+            line-height: 1rem;
+            text-transform: uppercase;
+            user-select: none;
+            box-shadow:
+                0 4px 6px -1px #488aec31,
+                0 2px 4px -1px #4281e017;
+            transition: all 0.6s ease;
+        }
+
+        .inputImgBtn:hover {
+            box-shadow:
+                0 10px 15px -3px #488aec4f,
+                0 4px 6px -2px #488aec17;
+        }
+
+        .inputImgBtn:focus,
+        .inputImgBtn:active {
+            opacity: 0.85;
+            box-shadow: none;
+        }
+    </style>
+    <div>
+        <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+            <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6">
+                <div
+                    class="flex mt-8 mb-4 shrink-0 items-center uppercase font-bold font-serif text-white text-2xl justify-center">
+                    Hospital
+                </div>
+                <nav class="flex flex-1 flex-col">
+                    <ul id="navbar" role="list" class="-mx-2 space-y-2 flex-1">
+
+                    </ul>
+
+                    <div class="-mx-6 mt-auto">
+                        <a href="#"
+                            class="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-indigo-700">
+                            <img class="h-8 w-8 rounded-full bg-indigo-700"
+                                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                alt="">
+                            <span class="sr-only">Your profile</span>
+                            <span aria-hidden="true">Tom Cook</span>
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+
+        <div class="sticky top-0 z-40 flex items-center gap-x-6 bg-indigo-600 px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+            <button type="button" class="-m-2.5 p-2.5 text-indigo-200 lg:hidden">
+                <span class="sr-only">Open sidebar</span>
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                    aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+            <div class="flex-1 text-sm font-semibold leading-6 text-white">Dashboard</div>
+            <a href="#">
+                <span class="sr-only">Your profile</span>
+                <img class="h-8 w-8 rounded-full bg-indigo-700"
+                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    alt="">
+            </a>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <main class="py-8 lg:pl-72">
+            <div class="px-4 sm:px-6 lg:px-8">
+                <!-- top -->
+                <div class="flex items-center justify-between">
+                    <div class="text-xl font-bold font-serif leading-9">Shifokorlar</div>
+                    <button type="submit"
+                        class="w-fit justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        data-func="toggleBtn">
+                        + Yangi xodim
+                    </button>
+                </div>
+
+                <!-- table -->
+                <table class="mt-5 min-w-full divide-y divide-gray-300">
+                    <thead>
+
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+        <!-- Modal -->
+
+    <div id="modal" class="relative z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                <!--
+                Background backdrop, show/hide based on modal state.
+            
+                Entering: "ease-out duration-300"
+                From: "opacity-0"
+                To: "opacity-100"
+                Leaving: "ease-in duration-200"
+                From: "opacity-100"
+                To: "opacity-0"
+            -->
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+            <div class="fixed inset-0 z-50 lg:w-[110vw] w-screen">
+                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                    <!--
+                    Modal panel, show/hide based on modal state.
+                    Entering: "ease-out duration-300"
+                        From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        To: "opacity-100 translate-y-0 sm:scale-100"
+                    Leaving: "ease-in duration-200"
+                        From: "opacity-100 translate-y-0 sm:scale-100"
+                        To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    -->
+                    <form id="modalForm"
+                        class="relative transform rounded-lg bg-white text-left shadow-xl h-[90%] overflow-auto transition-all sm:my-8 sm:w-full sm:max-w-2xl">
+
+                        <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 overflow-y-auto rounded-lg">
+                            <div class="sm:flex sm:items-start">
+                                <div class="mx-auto flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-customIndigo sm:mx-0 sm:h-8 sm:w-8">
+                                    <svg class="h-5 w-5 shrink-0 text-indigo-200 group-hover:text-white"
+                                        viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M7 16C6.80222 16 6.60888 16.0586 6.44443 16.1685C6.27998 16.2784 6.15181 16.4346 6.07612 16.6173C6.00043 16.8 5.98063 17.0011 6.01921 17.1951C6.0578 17.3891 6.15304 17.5673 6.29289 17.7071C6.43275 17.847 6.61093 17.9422 6.80491 17.9808C6.99889 18.0194 7.19996 17.9996 7.38268 17.9239C7.56541 17.8482 7.72159 17.72 7.83147 17.5556C7.94135 17.3911 8 17.1978 8 17C8 16.7348 7.89464 16.4804 7.70711 16.2929C7.51957 16.1054 7.26522 16 7 16ZM19.06 12L20.29 10.77C20.8518 10.2075 21.1674 9.445 21.1674 8.65C21.1674 7.855 20.8518 7.0925 20.29 6.53L17.46 3.71C16.8975 3.1482 16.135 2.83264 15.34 2.83264C14.545 2.83264 13.7825 3.1482 13.22 3.71L12 4.94C11.9843 4.15479 11.6613 3.40706 11.1004 2.85736C10.5395 2.30766 9.78536 1.99984 9 2H5C4.20435 2 3.44129 2.31607 2.87868 2.87868C2.31607 3.44129 2 4.20435 2 5V19C2 19.7956 2.31607 20.5587 2.87868 21.1213C3.44129 21.6839 4.20435 22 5 22H19C19.7956 22 20.5587 21.6839 21.1213 21.1213C21.6839 20.5587 22 19.7956 22 19V15C22.0002 14.2146 21.6923 13.4605 21.1426 12.8996C20.5929 12.3387 19.8452 12.0157 19.06 12ZM10 19C10 19.2652 9.89464 19.5196 9.70711 19.7071C9.51957 19.8946 9.26522 20 9 20H5C4.73478 20 4.48043 19.8946 4.29289 19.7071C4.10536 19.5196 4 19.2652 4 19V5C4 4.73478 4.10536 4.48043 4.29289 4.29289C4.48043 4.10536 4.73478 4 5 4H9C9.26522 4 9.51957 4.10536 9.70711 4.29289C9.89464 4.48043 10 4.73478 10 5V19ZM12 7.76L14.64 5.12C14.8274 4.93375 15.0808 4.82921 15.345 4.82921C15.6092 4.82921 15.8626 4.93375 16.05 5.12L18.88 8C19.0662 8.18736 19.1708 8.44081 19.1708 8.705C19.1708 8.96919 19.0662 9.22264 18.88 9.41L16 12.29L12 16.24V7.76ZM20 19C20 19.2652 19.8946 19.5196 19.7071 19.7071C19.5196 19.8946 19.2652 20 19 20H11.82C11.9226 19.7036 11.9799 19.3935 11.99 19.08L17.07 14H19C19.2652 14 19.5196 14.1054 19.7071 14.2929C19.8946 14.4804 20 14.7348 20 15V19Z" />
+                                    </svg>
+                                </div>
+
+                                <div class="flex-1 mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left grid grid-cols-2 gap-x-4">
+                                    <h2 class="text-[22px] font-semibold leading-6 text-gray-900 col-span-2" id="modal-title">Yangi xodim</h2>
+                                    <div class="mt-1 col-span-2">
+                                        <p class="text-sm text-gray-500" id="modal-text">Yangi xodim ma`lumotlarini kiriting.</p>
+                                    </div>
+
+                                    <div class="mt-3  w-4/5">
+                                        <label for="name"
+                                            class="block text-sm font-medium leading-6 text-gray-900">Ism-familiyasi</label>
+                                        <div class="mt-1">
+                                            <input id="name" name="name" type="text"
+                                                class="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 placeholder:italic outline-none focus:ring-1 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Rashidov Ulug`bek Atabayevich">
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3 w-4/5">
+                                        <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">Telefon raqami</label>
+                                        <div class="mt-1">
+                                            <input id="phone" name="phone" type="tel"  
+                                                class="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 placeholder:italic outline-0 focus:ring-1 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="+998(12)345-67-89">
+                                        </div>
+                                    </div>
+
+                                    <!-- select/option for spec of doctor -->
+                                    <div class="mt-3 w-4/5">
+                                        <label for="spec"
+                                            class="block text-sm font-medium leading-6 text-gray-900">Mutaxassislik</label>
+                                        <select id="spec" data-option="title" name="spec"
+                                            class="mt-1 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-indigo-600 outline-0 sm:text-sm sm:leading-6">
+                                        </select>
+                                    </div>
+
+                                    <!-- select/option for department of doctor -->
+                                    <div class="mt-3 w-4/5">
+                                        <label for="department" class="block text-sm font-medium leading-6 text-gray-900">Faoliyat bo`limi</label>
+                                        <select id="department" data-option="title" name="department"
+                                            class="mt-1 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 shadow-sm text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-indigo-600 outline-0 sm:text-sm sm:leading-6">
+                                        </select>
+                                    </div>
+
+                                    <div class="mt-3 w-4/5">
+                                        <label for="file" class="block text-sm font-medium leading-6 text-gray-900">Rasmi</label>
+                                        <label for="file" class="inputImgBtn">
+                                            <span class="flex items-center">
+                                                <svg class="size-4 mr-1" aria-hidden="true" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-width="2" stroke="#fffffff"
+                                                        d="M13.5 3H12H8C6.34315 3 5 4.34315 5 6V18C5 19.6569 6.34315 21 8 21H11M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V11.8125"
+                                                        stroke-linejoin="round" stroke-linecap="round"></path>
+                                                    <path stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="#fffffff"
+                                                        d="M17 15V18M17 21V18M17 18H14M17 18H20"></path>
+                                                </svg>
+                                                <span id="fileName">ADD FILE</span>
+                                            </span>
+                                            <input id="file" name="file" type="file" class="hidden"/>
+                                        </label>
+                                    </div>
+
+                                    <div class="mt-3 w-4/5">
+                                        <label for="gender" class="block text-sm font-medium leading-6 text-gray-900">Jinsi</label>
+                                        <select id="gender" data-option="title" name="gender"
+                                            class="mt-1 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 shadow-sm text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-indigo-600 outline-0 sm:text-sm sm:leading-6">
+                                            <option value="" selected disabled>Jinsi</option>
+                                            <option value="1">Erkak</option>
+                                            <option value="2">Ayol</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mt-3 w-4/5">
+                                        <h2 class="font-bold">Yashash joyi:</h2>
+                                        <label for="region" class="block text-sm font-medium leading-6 text-gray-900">Viloyat</label>
+                                        <select id="region" data-option="title" name="region"
+                                            class="mt-1 block w-full rounded-md border-0 py-1.5 px-2 shadow-sm text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-indigo-600 outline-0 sm:text-sm sm:leading-6">
+                                            <option value="" selected disabled>Viloyatni tanlang</option>
+                                            <option value="toshkent">Toshkent sh.</option>
+                                            <option value="navoiy">Navoiy viloyati</option>
+                                            <option value="buxoro">Buxoro viloyati</option>
+                                            <option value="samarqand">Samarqand viloyati</option>
+                                            <option value="namangan">Namangan viloyati</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mt-3 w-4/5">
+                                        <label for="district" class="block text-sm font-medium leading-6 text-gray-900">Tuman</label>
+                                        <select id="district" data-option="title" name="district"
+                                            class="mt-1 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 shadow-sm text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-indigo-600 outline-0 sm:text-sm sm:leading-6">
+                                            <option value="" selected disabled>Tumanni tanlang</option>
+                                            <option value="nurota">Nurota tumani</option>
+                                            <option value="chilonzor">Chilonzor tumani</option>
+                                            <option value="uchtepa">Uchtepa tumani</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mt-3 w-4/5">
+                                        <label for="education" class="block text-sm font-medium leading-6 text-gray-900">Ma`lumoti</label>
+                                        <select id="education" data-option="title" name="education"
+                                            class="mt-1 block w-full rounded-md border-0 py-1.5 px-2 shadow-sm text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-indigo-600 outline-0 sm:text-sm sm:leading-6">
+                                            <option value="" selected disabled>Ma`lumoti</option>
+                                            <option value="oliy">Oliy</option>
+                                            <option value="magistr">Magistr</option>
+                                            <option value="bakalavr">Bakalavr</option>
+                                            <option value="ortamaxsus">O`rta maxsus</option>
+                                            <option value="orta">O`rta</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mt-3 w-4/5">
+                                        <label for="family" class="block text-sm font-medium leading-6 text-gray-900">Oilaviy holati</label>
+                                        <select id="family" data-option="title" name="family"
+                                            class="mt-1 block w-full rounded-md border-0 py-1.5 px-2 shadow-sm text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-indigo-600 outline-0 sm:text-sm sm:leading-6">
+                                            <option value="" selected disabled>Oilaviy holati</option>
+                                            <option value="0">Turmush qurgan</option>
+                                            <option value="1">Turmush qurmagan</option>
+                                            
+                                        </select>
+                                    </div>
+
+                                    <div class="mt-3 w-4/5">
+                                        <label for="birthday" class="block text-sm font-medium leading-6 text-gray-900">Tug`ilgan sanasi</label>
+                                        <div class="mt-1">
+                                            <input id="birthday" name="birthday" type="date"
+                                                class="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 outline-0 focus:ring-1 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3 w-4/5">
+                                        <label for="worktime" class="block text-sm font-medium leading-6 text-gray-900">Ish soati</label>
+                                        <div class="mt-1">
+                                            <input id="worktime" name="worktime" type="number"
+                                                class="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 placeholder:italic outline-0 focus:ring-1 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="3">
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- buttons cancel and add -->
+                        <div class=" w-full bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 rounded-b-lg">
+                            <button type="submit" data-func="toggleBtn"
+                                class="inline-flex w-full justify-center rounded-md bg-customIndigo px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-customIndigo/80 sm:ml-3 sm:w-auto">
+                                Qo`shish
+                            </button>
+                            <button data-func="toggleBtn" type="button"
+                                class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                                Bekor qilish
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+    </div>
+
+
+
+    <script>
+        
+        const columns = [
+            {
+                name: 'file',
+                label: 'Rasmi',
+                tag: 'img',
+            },
+            {
+                name: 'name',
+                label: 'Ism-sharifi',
+            },
+            {
+                name: 'spec',
+                label: 'Mutaxassisligi',
+            },
+            {
+                name: 'department',
+                label: 'Tegishli bo`lim',
+            },
+            {
+                name: 'education',
+                label: 'Ma`lumoti',
+            },
+            
+        ]
+        const others = ['department','spec']
+        new Hospital('doctor', columns, others).start()
+
+    </script>
+</body>
+
+</html>
